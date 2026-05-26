@@ -133,7 +133,7 @@
         <textarea id="inp" rows="1" placeholder="Напиши задачу... (Enter — надіслати)"></textarea>
         <button class="sbtn" id="sb" onclick="send()">Надіслати ↗</button>
       </div>
-      <div class="hint">Працює на Claude AI · claude-sonnet-4-20250514</div>
+      <div class="hint">Працює на Claude AI · claude-3-5-sonnet-20241022</div>
     </div>
   </div>
 </div>
@@ -215,7 +215,7 @@ async function ask(k,txt){
   const r=await fetch('/api/chat',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:a.sys,messages:[...hist[k].slice(-12),{role:'user',content:txt}]})
+    body:JSON.stringify({model:'claude-3-5-sonnet-20241022',max_tokens:500,system:a.sys,messages:[...hist[k].slice(-12),{role:'user',content:txt}]})
   });
   if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+r.status);}
   const data=await r.json();
