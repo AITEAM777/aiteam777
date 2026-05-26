@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AITeam — Командний центр</title>
+<style>
+  :root {
+    --bg: #0f1117; --bg2: #1a1d27; --bg3: #22263a;
+    --border: #2e3250; --text: #e8eaf0; --text2: #8890b0;
+    --blue: #378ADD; --pink: #e87ab0; --green: #3aa83a;
+    --purple: #9a3aaa; --yellow: #e8c870;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+  header { background: var(--bg2); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 14px; }
+  .logo { font-size: 18px; font-weight: 700; }
+  .logo span { color: var(--blue); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); margin-left: auto; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .main { display: flex; flex: 1; height: calc(100vh - 57px); }
+  aside { width: 220px; background: var(--bg2); border-right: 1px solid var(--border); padding: 16px 0; flex-shrink: 0; }
+  .stitle { font-size: 11px; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing:.08em; padding: 0 16px 10px; }
+  .aitem { display: flex; align-items: center; gap: 10px; padding: 9px 16px; cursor: pointer; border-left: 3px solid transparent; transition: all .15s; }
+  .aitem:hover { background: var(--bg3); }
+  .aitem.active { background: var(--bg3); }
+  .av { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; flex-shrink: 0; }
+  .ainfo .n { font-size: 13px; font-weight: 500; color: var(--text); }
+  .ainfo .r { font-size: 11px; color: var(--text2); }
+  .chat-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  .chat-hdr { padding: 14px 20px; border-bottom: 1px solid var(--border); background: var(--bg2); display: flex; align-items: center; gap: 10px; }
+  .chat-hdr .av { width: 36px; height: 36px; font-size: 15px; }
+  .chat-hdr h2 { font-size: 15px; font-weight: 600; }
+  .chat-hdr p { font-size: 12px; color: var(--text2); }
+  .msgs { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+  .msgs::-webkit-scrollbar { width: 4px; }
+  .msgs::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .msg { display: flex; gap: 10px; max-width: 85%; }
+  .msg.u { flex-direction: row-reverse; align-self: flex-end; }
+  .msg.a { align-self: flex-start; }
+  .msg .av { width: 34px; height: 34px; font-size: 13px; flex-shrink: 0; }
+  .mbody { display: flex; flex-direction: column; gap: 3px; }
+  .meta { font-size: 11px; color: var(--text2); }
+  .msg.u .meta { text-align: right; }
+  .bubble { padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.55; }
+  .msg.u .bubble { background: var(--blue); color: #fff; border-radius: 14px 4px 14px 14px; }
+  .msg.a .bubble { background: var(--bg3); border: 1px solid var(--border); border-radius: 4px 14px 14px 14px; }
+  .badge { display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px; margin-top: 5px; font-weight: 500; }
+  .tdots span { width: 6px; height: 6px; border-radius: 50%; background: var(--text2); display: inline-block; animation: blink 1.2s infinite; margin-right: 3px; }
+  .tdots span:nth-child(2){animation-delay:.2s} .tdots span:nth-child(3){animation-delay:.4s}
+  @keyframes blink{0%,60%,100%{opacity:.2}30%{opacity:1}}
+  .inp-area { padding: 16px 20px; border-top: 1px solid var(--border); background: var(--bg2); }
+  .inp-wrap { display: flex; gap: 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: 12px; padding: 8px 8px 8px 16px; align-items: flex-end; }
+  .inp-wrap textarea { flex: 1; background: none; border: none; outline: none; color: var(--text); font-size: 14px; font-family: inherit; resize: none; max-height: 120px; line-height: 1.5; padding: 4px 0; }
+  .inp-wrap textarea::placeholder { color: var(--text2); }
+  .sbtn { padding: 8px 18px; background: var(--blue); color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; }
+  .sbtn:hover { background: #2a70cc; }
+  .sbtn:disabled { opacity: .5; cursor: default; }
+  .hint { font-size: 11px; color: var(--text2); margin-top: 8px; }
+  .welcome { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; gap: 12px; padding: 40px; text-align: center; }
+  .welcome h2 { font-size: 22px; font-weight: 600; }
+  .welcome p { font-size: 14px; color: var(--text2); max-width: 400px; line-height: 1.6; }
+  .exs { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 10px; }
+  .ex { padding: 7px 14px; background: var(--bg3); border: 1px solid var(--border); border-radius: 20px; font-size: 13px; color: var(--text2); cursor: pointer; }
+  .ex:hover { border-color: var(--blue); color: var(--text); }
+  .sel { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; align-items: center; padding: 10px 20px; border-bottom: 1px solid var(--border); background: var(--bg2); }
+  .sel span { font-size: 12px; color: var(--text2); }
+  .sbtn2 { padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border); font-size: 12px; background: var(--bg3); color: var(--text2); cursor: pointer; }
+  .sbtn2.on { border-color: var(--blue); color: var(--text); font-weight: 500; }
+  @media(max-width:600px){ aside{width:60px} .ainfo,.stitle{display:none} .aitem{justify-content:center;padding:10px} }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">AI<span>Team</span></div>
+  <span style="font-size:13px;color:var(--text2)">Командний центр</span>
+  <div class="dot"></div>
+  <span style="font-size:12px;color:var(--text2)">Онлайн</span>
+</header>
+<div class="main">
+  <aside>
+    <div class="stitle">Команда</div>
+    <div class="aitem active" data-key="auto" onclick="sel('auto',this)" style="border-left-color:var(--blue)">
+      <div class="av" style="background:#1a2a4a;color:#378ADD;font-size:16px">🤖</div>
+      <div class="ainfo"><div class="n">Авто</div><div class="r">Визначити автоматично</div></div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="aitem" data-key="anya" onclick="sel('anya',this)">
+        <div class="av" style="background:#3a1a28;color:#e87ab0">А</div>
+        <div class="ainfo"><div class="n">Аня</div><div class="r">UI/UX дизайнер</div></div>
+      </div>
+      <div class="aitem" data-key="dmytro" onclick="sel('dmytro',this)">
+        <div class="av" style="background:#0a1a3a;color:#378ADD">Д</div>
+        <div class="ainfo"><div class="n">Дмитро</div><div class="r">Backend розробник</div></div>
+      </div>
+      <div class="aitem" data-key="oleg" onclick="sel('oleg',this)">
+        <div class="av" style="background:#0a2a0a;color:#3aa83a">О</div>
+        <div class="ainfo"><div class="n">Олег</div><div class="r">QA інженер</div></div>
+      </div>
+      <div class="aitem" data-key="ira" onclick="sel('ira',this)">
+        <div class="av" style="background:#2a0a3a;color:#9a3aaa">І</div>
+        <div class="ainfo"><div class="n">Іра</div><div class="r">Крипто-аналітик</div></div>
+      </div>
+    </div>
+    <div style="margin-top:12px">
+      <div class="aitem" data-key="all" onclick="sel('all',this)">
+        <div class="av" style="background:#2a2a0a;color:#e8c870;font-size:16px">📢</div>
+        <div class="ainfo"><div class="n">Всім</div><div class="r">Broadcast</div></div>
+      </div>
+    </div>
+  </aside>
+  <div class="chat-area">
+    <div class="chat-hdr" id="hdr">
+      <div class="av" style="background:#1a2a4a;color:#378ADD;font-size:18px">🤖</div>
+      <div><h2>Авто-визначення</h2><p>Система сама обере потрібного агента</p></div>
+    </div>
+    <div class="msgs" id="msgs">
+      <div class="welcome" id="wlc">
+        <div style="font-size:48px">👥</div>
+        <h2>Твоя AI-команда готова</h2>
+        <p>Напиши задачу і система передасть потрібному агенту. Або обери зліва.</p>
+        <div class="exs">
+          <div class="ex" onclick="useEx(this)">Аня, зроби макет головної сторінки</div>
+          <div class="ex" onclick="useEx(this)">Дмитро, зроби API для авторизації</div>
+          <div class="ex" onclick="useEx(this)">Перевір форму реєстрації на баги</div>
+          <div class="ex" onclick="useEx(this)">Який курс BTC зараз?</div>
+          <div class="ex" onclick="useEx(this)">Всім: який статус задач?</div>
+        </div>
+      </div>
+    </div>
+    <div class="inp-area">
+      <div class="inp-wrap">
+        <textarea id="inp" rows="1" placeholder="Напиши задачу... (Enter — надіслати)"></textarea>
+        <button class="sbtn" id="sb" onclick="send()">Надіслати ↗</button>
+      </div>
+      <div class="hint">Працює на Claude AI · claude-sonnet-4-20250514</div>
+    </div>
+  </div>
+</div>
+<script>
+const AG = {
+  anya:{name:'Аня',role:'UI/UX дизайнер',color:'#e87ab0',bg:'#3a1a28',av:'А',
+    sys:'Ти Аня — UI/UX дизайнер у команді стартапу. Відповідай ТІЛЬКИ українською. Коротко, 2-4 речення. Підтверди задачу, уточни деталі якщо треба, дай оцінку часу. Згадуй Figma, компоненти, дизайн-систему.'},
+  dmytro:{name:'Дмитро',role:'Backend розробник',color:'#378ADD',bg:'#0a1a3a',av:'Д',
+    sys:'Ти Дмитро — backend розробник у команді стартапу. Відповідай ТІЛЬКИ українською. Коротко, 2-4 речення. Підтверди задачу, згадай технічні деталі (API, БД). Згадуй GitHub, тести, деплой.'},
+  oleg:{name:'Олег',role:'QA інженер',color:'#3aa83a',bg:'#0a2a0a',av:'О',
+    sys:'Ти Олег — QA інженер у команді стартапу. Відповідай ТІЛЬКИ українською. Коротко, 2-4 речення. Підтверди задачу, скажи які тести проведеш. Згадуй тест-кейси, регресію, баг-репорти.'},
+  ira:{name:'Іра',role:'Крипто-аналітик',color:'#9a3aaa',bg:'#2a0a3a',av:'І',
+    sys:'Ти Іра — крипто-аналітик у команді стартапу. Відповідай ТІЛЬКИ українською. Коротко, 2-4 речення. Підтверди задачу, дай ринковий контекст якщо доречно. Згадуй BTC, ETH, біржі.'}
+};
+const KW = {
+  anya:['дизайн','макет','figma','кнопка','інтерфейс','ui','ux','колір','іконка','екран','сторінка','аня','шрифт','лендінг'],
+  dmytro:['api','backend','сервер','база','endpoint','код','функція','авторизація','токен','дмитро','бд','деплой'],
+  oleg:['тест','баг','перевір','помилка','qa','тестування','регресія','кейс','олег'],
+  ira:['крипто','bitcoin','btc','eth','ethereum','курс','ринок','біржа','аналіз','bybit','mexc','іра','монет']
+};
+const hist={anya:[],dmytro:[],oleg:[],ira:[]};
+let chosen='auto', busy=false;
+
+function sel(k,el){
+  document.querySelectorAll('.aitem').forEach(x=>{x.classList.remove('active');x.style.borderLeftColor='transparent';});
+  el.classList.add('active');
+  const colors={auto:'#378ADD',anya:'#e87ab0',dmytro:'#378ADD',oleg:'#3aa83a',ira:'#9a3aaa',all:'#e8c870'};
+  el.style.borderLeftColor=colors[k]||'#378ADD';
+  chosen=k;
+  const h=document.getElementById('hdr');
+  if(k==='auto') h.innerHTML=`<div class="av" style="background:#1a2a4a;color:#378ADD;font-size:18px">🤖</div><div><h2>Авто-визначення</h2><p>Система сама обере потрібного агента</p></div>`;
+  else if(k==='all') h.innerHTML=`<div class="av" style="background:#2a2a0a;color:#e8c870;font-size:18px">📢</div><div><h2>Вся команда</h2><p>Повідомлення отримають всі 4 агенти</p></div>`;
+  else{const a=AG[k];h.innerHTML=`<div class="av" style="background:${a.bg};color:${a.color}">${a.av}</div><div><h2>${a.name}</h2><p>${a.role}</p></div>`;}
+}
+
+function detect(t){
+  const s=t.toLowerCase();
+  for(const[k,ws]of Object.entries(KW)) for(const w of ws) if(s.includes(w)) return k;
+  return 'anya';
+}
+
+function rmWlc(){const w=document.getElementById('wlc');if(w)w.remove();}
+
+function addU(text){
+  rmWlc();
+  const m=document.getElementById('msgs');
+  const t=new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div'); d.className='msg u';
+  d.innerHTML=`<div class="av" style="background:#1a3a6a;color:#fff">Ти</div><div class="mbody"><div class="meta">${t}</div><div class="bubble">${text.replace(/\n/g,'<br>')}</div></div>`;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
+}
+
+function addTyp(k){
+  const a=AG[k],m=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg a'; d.id='tp_'+k;
+  d.innerHTML=`<div class="av" style="background:${a.bg};color:${a.color}">${a.av}</div><div class="mbody"><div class="meta">${a.name} друкує...</div><div class="bubble"><div class="tdots"><span></span><span></span><span></span></div></div></div>`;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
+}
+function rmTyp(k){const e=document.getElementById('tp_'+k);if(e)e.remove();}
+
+function addR(k,text){
+  const a=AG[k],m=document.getElementById('msgs');
+  const t=new Date().toLocaleTimeString('uk-UA',{hour:'2-digit',minute:'2-digit'});
+  const d=document.createElement('div'); d.className='msg a';
+  const s=text.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  d.innerHTML=`<div class="av" style="background:${a.bg};color:${a.color}">${a.av}</div><div class="mbody"><div class="meta">${a.name} · ${a.role} · ${t}</div><div class="bubble">${s}<br><span class="badge" style="background:${a.bg};color:${a.color}">✓ Claude AI</span></div></div>`;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
+}
+
+function addErr(k,txt){
+  const a=AG[k],m=document.getElementById('msgs');
+  const d=document.createElement('div'); d.className='msg a';
+  d.innerHTML=`<div class="av" style="background:${a.bg};color:${a.color}">${a.av}</div><div class="mbody"><div class="meta">${a.name}</div><div class="bubble" style="border-color:#6a1a1a;color:#f08080">${txt}</div></div>`;
+  m.appendChild(d); m.scrollTop=m.scrollHeight;
+}
+
+async function ask(k,txt){
+  const a=AG[k];
+  const r=await fetch('/api/chat',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,system:a.sys,messages:[...hist[k].slice(-12),{role:'user',content:txt}]})
+  });
+  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.error?.message||'HTTP '+r.status);}
+  const data=await r.json();
+  const reply=data.content?.map(c=>c.text||'').join('')||'...';
+  hist[k].push({role:'user',content:txt},{role:'assistant',content:reply});
+  return reply;
+}
+
+async function send(){
+  const inp=document.getElementById('inp');
+  const txt=inp.value.trim();
+  if(!txt||busy)return;
+  inp.value=''; inp.style.height='auto';
+  busy=true; document.getElementById('sb').disabled=true;
+  addU(txt);
+  const keys=chosen==='all'?Object.keys(AG):chosen==='auto'?[detect(txt)]:[chosen];
+  for(let i=0;i<keys.length;i++){
+    const k=keys[i];
+    if(i>0)await new Promise(r=>setTimeout(r,500));
+    addTyp(k);
+    try{const rep=await ask(k,txt);rmTyp(k);addR(k,rep);}
+    catch(e){rmTyp(k);addErr(k,'⚠️ Помилка: '+e.message);}
+  }
+  busy=false; document.getElementById('sb').disabled=false; inp.focus();
+}
+
+function useEx(el){document.getElementById('inp').value=el.textContent;document.getElementById('inp').focus();}
+document.getElementById('inp').addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,120)+'px';});
+document.getElementById('inp').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}});
+</script>
+</body>
+</html>
